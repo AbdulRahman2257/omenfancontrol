@@ -1,0 +1,294 @@
+# release.yml
+# Triggered by pushing a version tag: git tag vx.y.z && git push origin main --tags
+#
+# Builds three formats in parallel after tests pass:
+#   1. PyInstaller  — self-contained binary tarball
+#   2. .deb         — full package with systemd service
+#   3. Source       — tarball for manual install
+#
+# Manual version bump required before tagging:
+#   1. edit pyproject.toml  version = "x.y.z"
+#   2. edit config.py       APP_VERSION = "x.y.z"
+#   3. git commit -m "release: vx.y.z"
+#   4. git tag vx.y.z
+#   5. git push origin main --tags
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            xvfb \
+            libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+            libxcb-xinerama0 libxcb-xfixes0 libegl1 libgl1
+
+      - name: Install Python deps
+        run: pip install PyQt6 pytest pytest-cov
+
+      - name: Run tests
+        env:
+          CI: "true"
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" \
+            python -m pytest tests/ \
+              -v \
+              --tb=short \
+              -m "not integration" \
+              --cov=. \
+              --cov-report=xml \
+              --cov-report=term-missing
+
+  build-pyinstaller:
+    name: Build PyInstaller
+    runs-on: ubuntu-22.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 \
+            libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 \
+            libxcb-xinerama0 libxcb-xfixes0 libegl1 libgl1
+
+      - name: Install Python deps
+        run: pip install PyQt6 pyinstaller
+
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Build with PyInstaller
+        run: pyinstaller omenfancontrol.spec --clean --noconfirm
+
+      - name: Verify binaries
+        run: |
+          ls dist/omenfancontrol/omenfancontrol-gui
+          ls dist/omenfancontrol/omenfancontrol-daemon
+
+      - name: Package tarball
+        run: |
+          RELEASE="omenfancontrol-${{ steps.version.outputs.version }}"
+          mkdir -p "release/$RELEASE"
+
+          cp -r dist/omenfancontrol/*           "release/$RELEASE/"
+          cp install/install_binary.sh          "release/$RELEASE/install.sh"
+          cp install/uninstall.sh               "release/$RELEASE/uninstall.sh"
+          cp install/omenfancontrol-gui.desktop "release/$RELEASE/"
+
+          # write binary-aware service file — ExecStart points to binary not Python
+          cat > "release/$RELEASE/omenfancontrol.service" <<EOF
+          [Unit]
+          Description=OMEN Fan Control Daemon
+          Documentation=https://github.com/AbdulRahman2257/omenfancontrol
+          After=multi-user.target
+          Wants=multi-user.target
+
+          [Service]
+          Type=simple
+          ExecStart=/opt/omenfancontrol/omenfancontrol-daemon
+          WorkingDirectory=/opt/omenfancontrol
+          Restart=on-failure
+          RestartSec=5
+          StandardOutput=journal
+          StandardError=journal
+          SyslogIdentifier=omenfancontrol
+
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+
+          cd release
+          tar -czf "${RELEASE}-linux-x86_64.tar.gz" "$RELEASE/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pyinstaller
+          path: "release/*.tar.gz"
+          retention-days: 1
+
+  build-deb:
+    name: Build .deb
+    runs-on: ubuntu-22.04
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Build .deb
+        run: |
+          rm -f *.deb
+          PKG="omenfancontrol_${{ steps.version.outputs.version }}_amd64"
+          mkdir -p "$PKG/DEBIAN"
+          mkdir -p "$PKG/opt/omenfancontrol"
+
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.venv' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            --exclude='tests/' \
+            --exclude='*.egg-info' \
+            --exclude='dist/' \
+            --exclude='build/' \
+            --exclude='*.deb' \
+            ./ "$PKG/opt/omenfancontrol/"
+
+          cp install/debian/control   "$PKG/DEBIAN/control"
+          cp install/debian/postinst  "$PKG/DEBIAN/postinst"
+          cp install/debian/prerm     "$PKG/DEBIAN/prerm"
+          cp install/debian/copyright "$PKG/DEBIAN/copyright"
+          chmod 755 "$PKG/DEBIAN/postinst"
+          chmod 755 "$PKG/DEBIAN/prerm"
+
+          sed -i \
+            "s/^Version:.*/Version: ${{ steps.version.outputs.version }}/" \
+            "$PKG/DEBIAN/control"
+
+          dpkg-deb --build --root-owner-group "$PKG"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb
+          path: "*.deb"
+          retention-days: 1
+
+  build-source:
+    name: Build source tarball
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Create source tarball
+        run: |
+          RELEASE="omenfancontrol-${{ steps.version.outputs.version }}"
+          mkdir -p "$RELEASE"
+
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.venv' \
+            --exclude='__pycache__' \
+            --exclude='*.pyc' \
+            --exclude='*.egg-info' \
+            --exclude='dist/' \
+            --exclude='build/' \
+            --exclude='*.deb' \
+            ./ "$RELEASE/"
+
+          tar -czf "${RELEASE}-source.tar.gz" "$RELEASE/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: "*-source.tar.gz"
+          retention-days: 1
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - build-pyinstaller
+      - build-deb
+      - build-source
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+          merge-multiple: true
+
+      - name: List artifacts
+        run: find artifacts/ -type f | sort
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "OMEN Fan Control v${{ steps.version.outputs.version }}"
+          draft: false
+          prerelease: >-
+            ${{
+              contains(github.ref_name, 'alpha') ||
+              contains(github.ref_name, 'beta')  ||
+              contains(github.ref_name, 'rc')
+            }}
+          body: |
+            ## OMEN Fan Control v${{ steps.version.outputs.version }}
+
+            ### Installation
+
+            | Format | File | Notes |
+            |--------|------|-------|
+            | **PyInstaller** | `omenfancontrol-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz` | Self-contained binaries, no Python needed |
+            | **.deb package** | `omenfancontrol_${{ steps.version.outputs.version }}_amd64.deb` | Full install — GUI + daemon + systemd. Recommended |
+            | **Source** | `omenfancontrol-${{ steps.version.outputs.version }}-source.tar.gz` | Manual install via `install.sh`. For developers |
+
+            ### Quick install
+
+            ```bash
+            sudo apt install ./omenfancontrol_${{ steps.version.outputs.version }}_amd64.deb
+            ```
+
+            ### Requirements
+
+            - Ubuntu 22.04+
+            - nvidia-smi (optional — NVIDIA GPU metrics)
+
+            ### Tested on
+
+            - HP OMEN 15 en0xxx — AMD Ryzen 7 4800H + NVIDIA RTX 2060
+
+            ### Changelog
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md)
+
+          files: |
+            artifacts/**/*

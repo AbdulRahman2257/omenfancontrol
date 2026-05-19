@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OMEN Dashboard
+Exec=/opt/omenfancontrol/.venv/bin/python3 /opt/omenfancontrol/main.py
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Comment=Start OMEN Dashboard on login

@@ -1,0 +1,483 @@
+/* ── Dark Theme ─────────────────────────────────────────────
+   Palette: Orange · Amber · Gold
+   Load via: app.setStyleSheet(Path("gui/styles/dark.qss").read_text())
+──────────────────────────────────────────────────────────────────────────── */
+
+
+/* ── base ──────────────────────────────────────────────────────────────────── */
+
+QWidget {
+    background-color: #09090f;
+    color:            #fef3e2;
+    font-family:      "Courier New", monospace;
+    font-size:        11px;
+}
+
+QMainWindow {
+    background-color: #09090f;
+}
+
+QDialog {
+    background-color: #09090f;
+}
+
+
+/* ── panels ────────────────────────────────────────────────────────────────── */
+
+/* base panel — all custom panel widgets use this object name */
+QFrame#Panel {
+    background-color: #110e0a;
+    border:           1px solid #1e1810;
+    border-radius:    8px;
+}
+
+/* metric card — left accent border applied per-card in Python via setStyleSheet */
+QFrame#MetricCard {
+    background-color: #110e0a;
+    border:           1px solid #1e1810;
+    border-radius:    8px;
+}
+
+QFrame#GraphCard {
+    background-color: #110e0a;
+    border:           1px solid #1e1810;
+    border-radius:    8px;
+}
+
+QFrame#ControlCard {
+    background-color: #110e0a;
+    border:           1px solid #1e1810;
+    border-radius:    8px;
+}
+
+
+/* ── typography ────────────────────────────────────────────────────────────── */
+
+/* section labels e.g. POWER PROFILE, FAN CONTROL, SYSTEM */
+QLabel#SectionLabel {
+    color:          #f6f224;
+    font-size:      12px;
+    letter-spacing: 3px;
+    font-weight:    700;
+}
+
+/* card header labels e.g. CPU     TEMP */
+QLabel#CardLabel {
+    color:          #dfd2c1;
+    font-size:      12px;
+    letter-spacing: 3px;
+}
+
+/* card sub-labels e.g. ROTATIONS/MIN, CPU TEMPERATURE */
+QLabel#CardSubLabel {
+    color:          #86e396;
+    font-size:      12px;
+    letter-spacing: 2px;
+}
+
+/* large metric value e.g. 69, 2398 */
+QLabel#MetricValue {
+    font-size:   48px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* unit label e.g. °C, % */
+QLabel#UnitLabel {
+    font-size:   16px;
+    font-weight: 400;
+}
+
+/* status text e.g. safe, warn, critical, idle */
+QLabel#StatusLabel {
+    font-size:      8px;
+    letter-spacing: 2px;
+}
+
+/* system info key e.g. profile, uptime, kernel */
+QLabel#SysKey {
+    color:          #7a6040;
+    font-size:      12px;
+    letter-spacing: 1px;
+}
+
+/* system info value */
+QLabel#SysValue {
+    color:          #fef3e2;
+    font-size:      12px;
+    letter-spacing: 1px;
+}
+
+/* connection status — connected */
+QLabel#StatusConnected {
+    color:          #22c55e;
+    font-size:      10px;
+    letter-spacing: 1px;
+}
+
+/* connection status — disconnected */
+QLabel#StatusDisconnected {
+    color:          #ef4444;
+    font-size:      10px;
+    letter-spacing: 1px;
+}
+
+/* threshold key labels e.g. CPU WARN, CPU CRIT */
+QLabel#ThreshKey {
+    color:          #7a6040;
+    font-size:      12px;
+    letter-spacing: 2px;
+}
+
+/* threshold value labels e.g. 85°C */
+QLabel#ThreshValue {
+    color:          #fef3e2;
+    font-size:      12px;
+    font-weight:    700;
+}
+
+/* alert message text */
+QLabel#AlertText {
+    color:          #f97316;
+    font-size:      10px;
+    letter-spacing: 1px;
+}
+
+/* main window title */
+QLabel#AppTitle {
+    color:          #f97316;
+    font-size:      13px;
+    font-weight:    700;
+    letter-spacing: 4px;
+}
+
+QLabel#AppSubTitle {
+    color:          #7a6040;
+    font-size:      9px;
+    letter-spacing: 3px;
+}
+
+
+/* ── status colors — applied via setProperty("status", "safe/warn/critical") ── */
+
+QLabel#StatusLabel[status="safe"] {
+    color: #22c55e;
+}
+
+QLabel#StatusLabel[status="warn"] {
+    color: #f97316;
+}
+
+QLabel#StatusLabel[status="critical"] {
+    color: #ef4444;
+}
+
+QLabel#StatusLabel[status="idle"] {
+    color: #7a6040;
+}
+
+QLabel#StatusLabel[status="normal"] {
+    color: #22c55e;
+}
+
+QLabel#StatusLabel[status="low"] {
+    color: #22c55e;
+}
+
+
+/* ── metric value colors ────────────────────────────────────────────────────── */
+
+QLabel#MetricValue[source="cpu"] {
+    color: #f97316;
+}
+
+QLabel#MetricValue[source="gpu"] {
+    color: #eab308;
+}
+
+QLabel#MetricValue[source="fan"] {
+    color: #fb923c;
+}
+
+QLabel#MetricValue[source="load"] {
+    color: #22c55e;
+}
+
+QLabel#MetricValue[status="warn"] {
+    color: #f97316;
+}
+
+QLabel#MetricValue[status="critical"] {
+    color: #ef4444;
+}
+
+
+/* ── buttons ────────────────────────────────────────────────────────────────── */
+
+QPushButton {
+    background-color: transparent;
+    color:            #7a6040;
+    border:           1px solid #1e1810;
+    border-radius:    4px;
+    padding:          10px 12px;
+    font-family:      "Courier New", monospace;
+    font-size:        12px;
+    letter-spacing:   2px;
+    font-weight:      700;
+}
+
+QPushButton:hover {
+    background-color: #1e1810;
+    color:            #a07850;
+    border-color:     #3d2010;
+}
+
+QPushButton:pressed {
+    background-color: #2a1e0e;
+}
+
+/* active/selected button — profile and fan mode */
+QPushButton#ActiveButton,
+QPushButton[active="true"] {
+    background-color: #f97316;
+    color:            #09090f;
+    border-color:     #f97316;
+}
+
+QPushButton#ActiveButton:hover,
+QPushButton[active="true"]:hover {
+    background-color: #ea6b0a;
+    border-color:     #ea6b0a;
+}
+
+/* save thresholds button */
+QPushButton#SaveButton {
+    background-color: transparent;
+    color:            #f97316;
+    border:           1px solid #f97316;
+    margin-top:       8px;
+}
+
+QPushButton#SaveButton:hover {
+    background-color: #f97316;
+    color:            #09090f;
+}
+
+
+/* ── spinboxes — threshold editor ───────────────────────────────────────────── */
+
+QDoubleSpinBox {
+    background-color: #1e1810;
+    color:            #fef3e2;
+    border:           1px solid #3d2010;
+    border-radius:    4px;
+    padding:          4px 8px;
+    font-family:      "Courier New", monospace;
+    font-size:        11px;
+}
+
+QDoubleSpinBox:focus {
+    border-color: #f97316;
+}
+
+QDoubleSpinBox::up-button,
+QDoubleSpinBox::down-button {
+    background-color: #2a1e0e;
+    border:           none;
+    width:            16px;
+}
+
+QDoubleSpinBox::up-button:hover,
+QDoubleSpinBox::down-button:hover {
+    background-color: #3d2010;
+}
+
+QDoubleSpinBox::up-arrow {
+    width:  0;
+    height: 0;
+    border-left:   4px solid transparent;
+    border-right:  4px solid transparent;
+    border-bottom: 5px solid #a07850;
+}
+
+QDoubleSpinBox::down-arrow {
+    width:  0;
+    height: 0;
+    border-left:  4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top:   5px solid #a07850;
+}
+
+
+/* ── scrollbars ─────────────────────────────────────────────────────────────── */
+
+QScrollBar:vertical {
+    background-color: #09090f;
+    width:            6px;
+    border:           none;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #3d2010;
+    border-radius:    3px;
+    min-height:       20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #f97316;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background-color: #09090f;
+    height:           6px;
+    border:           none;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #3d2010;
+    border-radius:    3px;
+    min-width:        20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #f97316;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+
+/* ── tab bar ─────────────────────────────────────────────────────────────────── */
+
+QTabWidget::pane {
+    background-color: #09090f;
+    border:           1px solid #1e1810;
+    border-radius:    8px;
+}
+
+QTabBar::tab {
+    background-color: transparent;
+    color:            #7a6040;
+    border:           none;
+    border-bottom:    2px solid transparent;
+    padding:          8px 20px;
+    font-family:      "Courier New", monospace;
+    font-size:        9px;
+    letter-spacing:   3px;
+    font-weight:      700;
+}
+
+QTabBar::tab:selected {
+    color:        #f97316;
+    border-bottom: 2px solid #f97316;
+}
+
+QTabBar::tab:hover:!selected {
+    color:        #a07850;
+}
+
+
+/* ── alert banner ────────────────────────────────────────────────────────────── */
+
+QFrame#AlertBanner {
+    background-color: #110e0a;
+    border:           1px solid #f97316;
+    border-radius:    6px;
+}
+
+QFrame#AlertBanner[level="warn"] {
+    border-color: #f97316;
+}
+
+QFrame#AlertBanner[level="critical"] {
+    border-color: #ef4444;
+}
+
+
+/* ── progress bar — status bar under metric cards ────────────────────────────── */
+
+QProgressBar {
+    background-color: #1e1810;
+    border:           none;
+    border-radius:    2px;
+    height:           3px;
+    text-align:       left;
+}
+
+QProgressBar::chunk {
+    border-radius: 2px;
+}
+
+QProgressBar[status="safe"]::chunk {
+    background-color: #22c55e;
+}
+
+QProgressBar[status="warn"]::chunk {
+    background-color: #f97316;
+}
+
+QProgressBar[status="critical"]::chunk {
+    background-color: #ef4444;
+}
+
+QProgressBar[status="idle"]::chunk {
+    background-color: #4a3020;
+}
+
+QProgressBar[status="normal"]::chunk {
+    background-color: #22c55e;
+}
+
+QProgressBar[status="low"]::chunk {
+    background-color: #22c55e;
+}
+
+
+/* ── tooltip ──────────────────────────────────────────────────────────────────── */
+
+QToolTip {
+    background-color: #110e0a;
+    color:            #fef3e2;
+    border:           1px solid #3d2010;
+    border-radius:    4px;
+    padding:          4px 8px;
+    font-family:      "Courier New", monospace;
+    font-size:        10px;
+}
+
+
+/* ── system tray menu ─────────────────────────────────────────────────────────── */
+
+QMenu {
+    background-color: #110e0a;
+    color:            #fef3e2;
+    border:           1px solid #1e1810;
+    border-radius:    6px;
+    padding:          4px;
+}
+
+QMenu::item {
+    padding:          6px 16px;
+    font-family:      "Courier New", monospace;
+    font-size:        10px;
+    letter-spacing:   1px;
+    border-radius:    4px;
+}
+
+QMenu::item:selected {
+    background-color: #1e1810;
+    color:            #f97316;
+}
+
+QMenu::separator {
+    height:           1px;
+    background-color: #1e1810;
+    margin:           4px 8px;
+}

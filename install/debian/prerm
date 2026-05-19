@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+SERVICE="omenfancontrol"
+
+case "$1" in
+    remove|purge)
+        systemctl stop    "$SERVICE" 2>/dev/null || true
+        systemctl disable "$SERVICE" 2>/dev/null || true
+        rm -f /etc/systemd/system/omenfancontrol.service
+        systemctl daemon-reload || true
+
+        rm -f /usr/share/applications/omenfancontrol.desktop
+        rm -f /usr/local/bin/omenfancontrol
+        ;;
+
+    purge)
+        rm -rf /var/lib/omenfancontrol
+        ;;
+esac
+
+exit 0

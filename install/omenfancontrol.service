@@ -1,0 +1,18 @@
+[Unit]
+Description=OMEN Fan Control Daemon
+Documentation=https://github.com/AbdulRahman2257/omenfancontrol
+After=multi-user.target
+Wants=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/opt/omenfancontrol/.venv/bin/python3 -m daemon.daemon
+WorkingDirectory=/opt/omenfancontrol
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=omenfancontrol
+
+[Install]
+WantedBy=multi-user.target

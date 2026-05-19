@@ -1,0 +1,13 @@
+Package: omenfancontrol
+Version: 0.1.0
+Architecture: amd64
+Maintainer: Abdul Rahman <https://github.com/AbdulRahman2257>
+Depends: python3.11, python3.11-venv, python3-pip
+Description: Fan control and thermal monitoring for HP OMEN laptops on Linux
+ Replaces OMEN Hub on Linux. Provides live CPU/GPU temperature monitoring,
+ fan control, power profiles, configurable thresholds and system tray icon.
+ .
+ Optionally requires nvidia-smi for NVIDIA GPU metrics.
+Homepage: https://github.com/AbdulRahman2257/omenfancontrol
+Section: utils
+Priority: optional

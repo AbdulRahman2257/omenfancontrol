@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=OMEN Dashboard
+Comment=Fan and thermal control dashboard for HP OMEN laptops
+Exec=/opt/omenfancontrol/.venv/bin/python3 /opt/omenfancontrol/main.py
+Icon=utilities-system-monitor
+Terminal=false
+Categories=System;Monitor;
+Keywords=fan;thermal;omen;hp;
+StartupNotify=true

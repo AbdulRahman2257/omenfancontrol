@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "omenfancontrol"
+version = "0.1.0"
+description = "Fan and thermal control dashboard for HP OMEN laptops on Linux"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "abdul"}
+]
+keywords = ["hp", "omen", "fan", "thermal", "linux", "dashboard"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: System :: Hardware",
+    "Topic :: System :: Monitoring",
+]
+dependencies = [
+    "PyQt6>=6.4.0",
+]
+
+[project.scripts]
+omenfancontrol-gui    = "main:main"
+omenfancontrol-daemon = "daemon.daemon:main"
+
+[project.urls]
+Homepage   = "https://github.com/AbdulRahman2257/omenfancontrol"
+Repository = "https://github.com/AbdulRahman2257/omenfancontrol"
+Issues     = "https://github.com/AbdulRahman2257/omenfancontrol/issues"
+
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["daemon*", "gui*"]
+
+[tool.setuptools.package-data]
+"gui" = ["styles/*.qss"]
+
+[tool.black]
+line-length    = 88
+target-version = ["py311"]
+
+[tool.pytest.ini_options]
+testpaths        = ["tests"]
+python_files     = ["test_*.py"]
+python_functions = ["test_*"]
+markers = [
+    "integration: requires real hardware or sudo — skipped on CI",
+    "qt: requires display server — run with xvfb",
+]
