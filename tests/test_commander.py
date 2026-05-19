@@ -99,7 +99,7 @@ def test_fan_set_valid_modes_pass_validation() -> None:
 
 def test_set_power_profile_invalid() -> None:
     """set_power_profile rejects invalid profiles."""
-    for profile in ("ultra", "", "BALANCED", "power-saver", "power_saver"):
+    for profile in ("ultra", "", "BALANCED", "cool", "power_saver"):
         r = set_power_profile(profile)
         assert r.ok is False
         assert "invalid" in r.message.lower()

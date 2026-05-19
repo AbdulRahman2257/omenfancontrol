@@ -313,7 +313,8 @@ def read_available_profiles() -> list[str]:
 
 
 # gpu — nvidia-smi is the only way to get all metrics in one call, but we want to check
-# availability once at startup and skip if not present to avoid subprocess overhead every second
+# availability once at startup and skip if not present to avoid subprocess
+#  overhead every second
 
 _nvidia_available: bool | None = None
 
