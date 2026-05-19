@@ -20,7 +20,6 @@ import threading
 import time
 from unittest.mock import MagicMock, patch
 
-
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from models import Alert, AlertLevel, CommandResult  # noqa: E402
