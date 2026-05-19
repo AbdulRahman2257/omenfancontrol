@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/AbdulRahman2257/omenfancontrol/actions/workflows/ci.yml/badge.svg)](https://github.com/AbdulRahman2257/omenfancontrol/actions/workflows/ci.yml)
 [![version](https://img.shields.io/badge/version-0.1.0-f97316?style=flat-square&labelColor=1e1810)](https://github.com/AbdulRahman2257/omenfancontrol/releases)
-[![updated](https://img.shields.io/badge/updated-2026--05--20-3d2f1a?style=flat-square&labelColor=1e1810)]()
+[![updated](https://img.shields.io/badge/updated-2026--05--19-3d2f1a?style=flat-square&labelColor=1e1810)]()
 [![python](https://img.shields.io/badge/python-3.11+-f59e0b?style=flat-square&labelColor=1e1810)](https://www.python.org)
 [![platform](https://img.shields.io/badge/platform-Linux-eab308?style=flat-square&labelColor=1e1810)]()
 [![license](https://img.shields.io/badge/license-GPL--v3-22c55e?style=flat-square&labelColor=1e1810)](LICENSE)
